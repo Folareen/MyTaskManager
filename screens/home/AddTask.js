@@ -5,11 +5,11 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import Category from "../../components/Category";
 import { db } from "../../firebase.config";
-import KeyboardAvoidingView from "react-native/Libraries/Components/Keyboard/KeyboardAvoidingView";
 import { AuthContext } from "../../context/AuthContext";
 
 const categories = ["exercise", "date", "study", "work", "shopping"];
@@ -40,8 +40,10 @@ const AddTask = ({ navigation }) => {
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = () => {
+    if (!category || !name || !day || !month || !year || !timeRange)
+      return alert("Error!... please fill all fields!");
     setSubmitting(true);
-    db.collection(user.id)
+    db.collection(user.uid)
       .add({
         category,
         name,
@@ -60,12 +62,12 @@ const AddTask = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={container}>
+    <KeyboardAvoidingView behavior="height" style={container}>
       <Text style={categoryHeader}>choose task category</Text>
-
       <View style={categoriesBox}>
         {categories.map((each) => (
           <TouchableOpacity
+            key={each}
             onPress={() => setCategory(each)}
             style={
               category == each

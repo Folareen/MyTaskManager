@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import Category from "../../components/Category";
 import Task from "../../components/Task";
 import { Ionicons } from "@expo/vector-icons";
-import { auth } from "../../firebase.config";
+import { db } from "../../firebase.config";
 import { AuthContext } from "../../context/AuthContext";
 
 const ViewTasks = ({ navigation }) => {
@@ -40,12 +40,33 @@ const ViewTasks = ({ navigation }) => {
     addBtnContainer,
   } = styles;
 
+  console.log(navigation.getState);
+
   const categories = ["exercise", "date", "study", "work", "shopping"];
+
+  const [tasks, setTasks] = useState([]);
+  const [fetching, setFetching] = useState(false);
 
   const { user } = useContext(AuthContext);
 
+  useEffect(() => {
+    setFetching(true);
+    db.collection(user.uid)
+      .get()
+      .then((querySnapshot) => {
+        let documents = [];
+
+        querySnapshot.forEach((doc) => {
+          documents.push(doc.data());
+        });
+        setTasks(documents);
+      })
+      .finally(() => setFetching(false));
+  }, [navigation]);
+
   return (
     <View style={container}>
+      <Text>hhi</Text>
       <View style={profileBox}>
         <Image
           style={profileImg}
@@ -61,7 +82,8 @@ const ViewTasks = ({ navigation }) => {
       </View>
 
       <Text style={taskAmount}>
-        you have <Text style={taskAmountHighlight}>12 tasks</Text> this week
+        you have <Text style={taskAmountHighlight}>{tasks.length} tasks</Text>{" "}
+        this week
       </Text>
 
       <View style={searchBox}>
@@ -82,25 +104,29 @@ const ViewTasks = ({ navigation }) => {
         ))}
       </View>
 
-      <Text style={todayTaskHeader}>Today's task(5)</Text>
+      <Text style={todayTaskHeader}>Today's task({tasks.length})</Text>
 
-      <View>
-        {[
-          {
-            icon: "exercise",
-            name: "exercise at finesse gym",
-            duration: "7am - 9am",
-          },
-          { icon: "work", name: "build task manager", duration: "11am - 2pm" },
-          {
-            icon: "exercise",
-            name: "read about weather change",
-            duration: "3pm - 4pm",
-          },
-        ].map(({ icon, name, duration }) => (
-          <Task icon={icon} name={name} duration={duration} />
-        ))}
-      </View>
+      <>
+        {fetching ? (
+          <Text
+            style={{ marginVertical: 10, fontSize: 18, fontStyle: "italic" }}
+          >
+            Loading tasks...
+          </Text>
+        ) : (
+          <View>
+            {tasks.length === 0 ? (
+              <Text style={{ marginVertical: 10 }}>No task... add a task.</Text>
+            ) : (
+              <>
+                {tasks.map(({ category, name, timeRange }) => (
+                  <Task icon={category} name={name} duration={timeRange} />
+                ))}
+              </>
+            )}
+          </View>
+        )}
+      </>
 
       <View style={addBtnContainer}>
         <TouchableOpacity

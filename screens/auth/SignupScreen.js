@@ -51,7 +51,6 @@ const SignupScreen = ({ navigation }) => {
           })
           .then(() => {
             setUser(user.user);
-            console.log(user.user.displayName);
           })
           .catch(() => alert("error"));
       })
