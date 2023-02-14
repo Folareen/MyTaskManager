@@ -9,6 +9,7 @@ import {
 import React, { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { auth } from "../../firebase.config";
+import { Ionicons } from '@expo/vector-icons';
 
 const LoginScreen = ({ navigation }) => {
   const {
@@ -26,6 +27,7 @@ const LoginScreen = ({ navigation }) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false)
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -62,12 +64,26 @@ const LoginScreen = ({ navigation }) => {
 
       <View style={inputContainer}>
         <Text style={inputLabel}>password</Text>
-        <TextInput
-          value={password}
-          secureTextEntry
-          onChangeText={(value) => setPassword(value)}
-          style={input}
-        />
+
+        <View style={[input, { flexDirection: 'row', alignItems: 'center' }]}>
+          <TextInput
+            value={password}
+            onChangeText={(value) => setPassword(value)}
+          secureTextEntry={showPassword}
+          style={{flex: 1}}
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            {
+              showPassword ?
+                <Ionicons name="eye-off-outline" size={24} color="black" />
+                :
+                <Ionicons name="eye-outline" size={24} color="black" />
+            }
+          </TouchableOpacity>
+
+
+        </View>
+
       </View>
 
       <TouchableOpacity
@@ -124,7 +140,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "white",
     borderRadius: 5,
-    paddingVertical: 5,
+    paddingVertical: 10,
     paddingHorizontal: 15,
   },
   button: {
