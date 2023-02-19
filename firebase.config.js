@@ -2,6 +2,8 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+// import { getAuth, initializeAuth, getReactNativePersistence} from "firebase/auth/react-native";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,6 +21,7 @@ const firebaseConfig = {
 let app;
 if (firebase.apps.length === 0) {
   app = firebase.initializeApp(firebaseConfig);
+  // persistence: getReactNativePersistence(AsyncStorage),
 } else {
   app = firebase.app();
 }

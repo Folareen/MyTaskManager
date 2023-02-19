@@ -1,8 +1,9 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import React from "react";
 
-const LandingScreen = ({ navigation }) => {
+const Landing = ({ navigation }) => {
   const { container, top, bottom, iconImg, manImg, img, header, description, button, buttonText } = styles;
+
   return (
     <View style={container}>
 
@@ -27,7 +28,6 @@ const LandingScreen = ({ navigation }) => {
             <Image style={img} source={require('../../assets/WelRight.png')} />
           </View>
         </View>
-
 
       </View>
 
@@ -71,7 +71,7 @@ const LandingScreen = ({ navigation }) => {
   );
 };
 
-export default LandingScreen;
+export default Landing;
 
 const styles = StyleSheet.create({
   container: {

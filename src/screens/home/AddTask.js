@@ -7,10 +7,10 @@ import {
   View,
   KeyboardAvoidingView,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import Category from "../../components/Category";
 import { db } from "../../firebase.config";
-import { AuthContext } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 
 const categories = ["exercise", "date", "study", "work", "shopping"];
 
@@ -35,7 +35,7 @@ const AddTask = ({ navigation }) => {
   const [year, setYear] = useState("");
   const [timeRange, setTimeRange] = useState("");
 
-  const { user } = useContext(AuthContext);
+  const {user} = useSelector(state => state.auth)
 
   const [submitting, setSubmitting] = useState(false);
 

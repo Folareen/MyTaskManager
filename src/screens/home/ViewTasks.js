@@ -8,14 +8,14 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import Category from "../../components/Category";
 import Task from "../../components/Task";
 import { Ionicons } from "@expo/vector-icons";
 import { db } from "../../firebase.config";
-import { AuthContext } from "../../context/AuthContext";
+import { useSelector } from "react-redux";
 
 const ViewTasks = ({ navigation }) => {
   const {
@@ -47,7 +47,7 @@ const ViewTasks = ({ navigation }) => {
   const [tasks, setTasks] = useState([]);
   const [fetching, setFetching] = useState(false);
 
-  const { user } = useContext(AuthContext);
+  const {user} = useSelector(state => state.auth)
 
   useEffect(() => {
     setFetching(true);
@@ -70,7 +70,7 @@ const ViewTasks = ({ navigation }) => {
       <View style={profileBox}>
         <Image
           style={profileImg}
-          source={require("../../assets/profile.png")}
+          source={require("../../assets/defaultAvatar.png")}
         />
         <View style={profileNameBox}>
           <Text style={profileHeader}>Welcome back,</Text>

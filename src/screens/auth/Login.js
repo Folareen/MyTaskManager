@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { auth } from "../../firebase.config";
-import { Ionicons } from "@expo/vector-icons";
+import { auth } from "../../../firebase.config";
+import { Ionicons } from '@expo/vector-icons';
+import { useDispatch } from "react-redux";
+import { setUser } from "../../features/authSlice";
 
-const SignupScreen = ({ navigation }) => {
+const Login = ({ navigation }) => {
   const {
     container,
     header,
@@ -25,38 +26,27 @@ const SignupScreen = ({ navigation }) => {
     otherLink,
   } = styles;
 
-  const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const [submitting, setSubmitting] = useState(false);
 
-  const { setUser } = useContext(AuthContext);
+  const dispatch = useDispatch()
 
   const handleSubmit = () => {
-    if (!fullname) return alert("Invalid name");
     if (!email) return alert("Invalid email");
     if (!password) return alert("Invalid password");
-    if (password != confirmPassword) {
-      return alert("Passwords do not match");
-    }
 
     setSubmitting(true);
+
     auth
-      .createUserWithEmailAndPassword(email, password)
+      .signInWithEmailAndPassword(email, password)
       .then((user) => {
-        auth.currentUser
-          .updateProfile({
-            displayName: fullname,
-          })
-          .then(() => {
-            setUser(user.user);
-          })
-          .catch(() => alert("error"));
+        // dispatch(setUser(user.user))
+        // dispatch(setUser({name : 'wahab'}))
+        console.log('from login', user.user)
+        // setUser(user.user);
       })
       .catch((error) => alert(error))
       .finally(() => setSubmitting(false));
@@ -64,17 +54,7 @@ const SignupScreen = ({ navigation }) => {
 
   return (
     <View style={container}>
-      <Text style={header}>sign up</Text>
-
-      <View style={inputContainer}>
-        <Text style={inputLabel}>Fullname</Text>
-        <TextInput
-          value={fullname}
-          onChangeText={(value) => setFullname(value)}
-          style={input}
-          placeholder="e.g John Doe"
-        />
-      </View>
+      <Text style={header}>login</Text>
 
       <View style={inputContainer}>
         <Text style={inputLabel}>email</Text>
@@ -88,11 +68,12 @@ const SignupScreen = ({ navigation }) => {
 
       <View style={inputContainer}>
         <Text style={inputLabel}>password</Text>
+
         <View style={[input, { flexDirection: 'row', alignItems: 'center' }]}>
           <TextInput
             value={password}
             onChangeText={(value) => setPassword(value)}
-          secureTextEntry={showPassword}
+          secureTextEntry={!showPassword}
           style={{flex: 1}}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -103,38 +84,18 @@ const SignupScreen = ({ navigation }) => {
                 <Ionicons name="eye-outline" size={24} color="black" />
             }
           </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={inputContainer}>
-        <Text style={inputLabel}>confirm password</Text>
-        <View style={[input, { flexDirection: 'row', alignItems: 'center' }]}>
-          <TextInput
-            value={confirmPassword}
-            onChangeText={(value) => setConfirmPassword(value)}
-          secureTextEntry={showConfirmPassword}
-          style={{flex: 1}}
-          />
-          <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-            {
-              showConfirmPassword ?
-                <Ionicons name="eye-off-outline" size={24} color="black" />
-                :
-                <Ionicons name="eye-outline" size={24} color="black" />
-            }
-          </TouchableOpacity>
 
 
         </View>
+
       </View>
 
       <TouchableOpacity
         style={[button, submitting ? { backgroundColor: "grey" } : {}]}
         onPress={handleSubmit}
-        disabled={submitting}
       >
         <Text style={buttonText}>
-          {submitting ? "please wait..." : "sign up"}
+          {submitting ? "Please wait..." : "login"}
         </Text>
       </TouchableOpacity>
 
@@ -144,16 +105,16 @@ const SignupScreen = ({ navigation }) => {
       </View>
 
       <View style={otherContainer}>
-        <Text style={otherLabel}>have an account?</Text>
-        <TouchableOpacity onPress={() => navigation.replace("Login")}>
-          <Text style={otherLink}>Login</Text>
+        <Text style={otherLabel}>don't have an account?</Text>
+        <TouchableOpacity onPress={() => navigation.replace("Signup")}>
+          <Text style={otherLink}>sign up</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-export default SignupScreen;
+export default Login;
 
 const styles = StyleSheet.create({
   container: {

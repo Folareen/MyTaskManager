@@ -1,8 +1,10 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
 import { Entypo } from "@expo/vector-icons";
 import { auth } from "../../firebase.config";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../features/authSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
   const {
@@ -21,13 +23,17 @@ const Profile = () => {
     settingsBtnText,
   } = styles;
 
-  const { user, setUser } = useContext(AuthContext);
+  const dispatch = useDispatch()
 
-  const logout = () => {
+  const {user} = useSelector(state => state.auth)
+
+ const logout = () => {
     auth
       .signOut()
       .then(() => {
-        setUser(null);
+        await AsyncStorage.removeItem('user')
+        // setUser(null);
+        dispatch(setUser(null))
         alert("Bye!");
       })
       .catch(() => alert("Error!, failed to sign out"));
@@ -39,7 +45,7 @@ const Profile = () => {
         <View style={imgContainer}>
           <Image
             style={profileImg}
-            source={require("../../assets/profile.png")}
+            source={require("../../assets/defaultAvatar.png")}
           />
         </View>
 
