@@ -1,12 +1,11 @@
-import { View, Text } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { NavigationContainer } from '@react-navigation/native'
 import React, { useEffect, useState } from 'react'
+import { Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUser } from '../features/authSlice'
 import Auth from './Auth'
 import Main from './Main'
-import { auth } from '../../firebase.config'
-import { NavigationContainer } from '@react-navigation/native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Navigation = () => {
     const { user } = useSelector(state => state.auth)
@@ -16,30 +15,23 @@ const Navigation = () => {
 
     useEffect(
         () => {
-
-            const unsubscribe = auth.onAuthStateChanged(
-                async (user) => {
-                    setAuthenticating(false)
-
-                    if (user) {
-                        // dispatch(setUser(user.providerData[0]));
-                        await AsyncStorage.removeItem('user')
-                        await AsyncStorage.setItem('user', JSON.stringify(user))
-                        dispatch(setUser(user))
-                        console.log('reset user!')
-                    } else {
-                        const storedUser = await AsyncStorage.getItem('user')
-                        if (storedUser) {
-                            dispatch(setUser(JSON.parse(storedUser)))
-                            return
+            (
+                async () => {
+                    try {
+                        setAuthenticating(true)
+                        const user = await AsyncStorage.getItem('user')
+                        if(user){
+                        dispatch(setUser(JSON.parse(user)))
+                        } else {
+                            dispatch(setUser(null))
                         }
-                        dispatch(setUser(null));
+                    } catch (error) {
+                        alert(error.message)
+                    } finally {
+                        setAuthenticating(false)
                     }
-
                 }
-            )
-            // setAuthenticating(false)
-            return unsubscribe
+            )()
         }, []
     )
 

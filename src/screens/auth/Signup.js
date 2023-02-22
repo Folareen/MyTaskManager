@@ -1,15 +1,12 @@
+import { Ionicons } from "@expo/vector-icons";
+import React, { useState } from "react";
 import {
   StyleSheet,
-  Text,
-  KeyboardAvoidingView,
-  View,
-  TextInput,
-  TouchableOpacity,
+  Text, TextInput,
+  TouchableOpacity, View
 } from "react-native";
-import React, { useState } from "react";
-import { auth } from "../../../firebase.config";
-import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
+import { auth } from "../../../firebase.config";
 import { setUser } from "../../features/authSlice";
 
 const Signup = ({ navigation }) => {
@@ -54,8 +51,9 @@ const Signup = ({ navigation }) => {
           .updateProfile({
             displayName: fullname,
           })
-          .then(() => {
-            // dispatch(setUser(user))
+          .then(async () => {
+            dispatch(setUser(user))
+            await AsyncStorage.setItem('user', JSON.stringify(user))
           })
           .catch(() => alert("error"));
       })
@@ -93,8 +91,8 @@ const Signup = ({ navigation }) => {
           <TextInput
             value={password}
             onChangeText={(value) => setPassword(value)}
-          secureTextEntry={!showPassword}
-          style={{flex: 1}}
+            secureTextEntry={!showPassword}
+            style={{ flex: 1 }}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             {
@@ -113,8 +111,8 @@ const Signup = ({ navigation }) => {
           <TextInput
             value={confirmPassword}
             onChangeText={(value) => setConfirmPassword(value)}
-          secureTextEntry={showConfirmPassword}
-          style={{flex: 1}}
+            secureTextEntry={showConfirmPassword}
+            style={{ flex: 1 }}
           />
           <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
             {

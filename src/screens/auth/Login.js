@@ -1,15 +1,14 @@
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import React, { useState } from "react";
 import {
   StyleSheet,
-  Text,
-  KeyboardAvoidingView,
-  View,
-  TextInput,
-  TouchableOpacity,
+  Text, TextInput,
+  TouchableOpacity, View
 } from "react-native";
-import React, { useContext, useState } from "react";
-import { auth } from "../../../firebase.config";
-import { Ionicons } from '@expo/vector-icons';
 import { useDispatch } from "react-redux";
+import { auth } from "../../../firebase.config";
 import { setUser } from "../../features/authSlice";
 
 const Login = ({ navigation }) => {
@@ -34,22 +33,21 @@ const Login = ({ navigation }) => {
 
   const dispatch = useDispatch()
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email) return alert("Invalid email");
     if (!password) return alert("Invalid password");
 
-    setSubmitting(true);
-
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .then((user) => {
-        // dispatch(setUser(user.user))
-        // dispatch(setUser({name : 'wahab'}))
-        console.log('from login', user.user)
-        // setUser(user.user);
-      })
-      .catch((error) => alert(error))
-      .finally(() => setSubmitting(false));
+    try {
+      setSubmitting(true);
+      const user = await signInWithEmailAndPassword(auth, email, password)
+      console.log(user)
+      dispatch(setUser(user))
+      await AsyncStorage.setItem('user', JSON.stringify(user))
+    } catch (error) {
+      alert(error.message)
+    } finally {
+      setSubmitting(false)
+    }
   };
 
   return (
@@ -73,8 +71,8 @@ const Login = ({ navigation }) => {
           <TextInput
             value={password}
             onChangeText={(value) => setPassword(value)}
-          secureTextEntry={!showPassword}
-          style={{flex: 1}}
+            secureTextEntry={!showPassword}
+            style={{ flex: 1 }}
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             {

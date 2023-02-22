@@ -2,12 +2,14 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { auth } from '../../firebase.config';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Hello = () => {
     const handleLogout = () => {
         auth
             .signOut()
-            .then(() => {
+            .then( async () => {
+                await AsyncStorage.removeItem('user')
                 // setUser(null);
                 // dispatch(setUser(null))
                 alert("Bye!");
@@ -23,7 +25,7 @@ const Hello = () => {
 
             <TouchableOpacity onPress={handleLogout}>
                 <Text>
-                logout
+                    logout
                 </Text>
             </TouchableOpacity>
 
