@@ -5,7 +5,7 @@ import { Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUser } from '../features/authSlice'
 import Auth from './Auth'
-import Main from './Main'
+import Main from './main'
 
 const Navigation = () => {
     const { user } = useSelector(state => state.auth)

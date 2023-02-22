@@ -1,10 +1,11 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useContext, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
-import { auth } from "../../firebase.config";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../features/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signOut } from "firebase/auth";
+import { auth } from "../../../firebase.config";
 
 const Profile = () => {
   const {
@@ -25,18 +26,18 @@ const Profile = () => {
 
   const dispatch = useDispatch()
 
-  const {user} = useSelector(state => state.auth)
+  const { user } = useSelector(state => state.auth)
 
- const logout = () => {
-    auth
-      .signOut()
-      .then(() => {
-        await AsyncStorage.removeItem('user')
-        // setUser(null);
-        dispatch(setUser(null))
-        alert("Bye!");
-      })
-      .catch(() => alert("Error!, failed to sign out"));
+  const logout = async () => {
+    try {
+      signOut(auth)
+      await AsyncStorage.removeItem('user')
+      dispatch(setUser(null))
+      alert("Bye!");
+
+    } catch (error) {
+      alert("Error!, failed to sign out")
+    }
   };
 
   return (

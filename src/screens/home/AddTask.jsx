@@ -9,8 +9,9 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import Category from "../../components/Category";
-import { db } from "../../firebase.config";
+// import { db } from "../../firebase.config";
 import { useSelector } from "react-redux";
+import { db } from "../../../firebase.config";
 
 const categories = ["exercise", "date", "study", "work", "shopping"];
 
@@ -43,22 +44,22 @@ const AddTask = ({ navigation }) => {
     if (!category || !name || !day || !month || !year || !timeRange)
       return alert("Error!... please fill all fields!");
     setSubmitting(true);
-    db.collection(user.uid)
-      .add({
-        category,
-        name,
-        date: `Friday, ${day}, ${month} ${year}`,
-        timeRange,
-      })
-      .then((docRef) => {
-        console.log(docRef);
-        alert("Task added!");
-        navigation.replace("ViewTasks");
-      })
-      .catch((error) => {
-        alert(error);
-      })
-      .finally(() => setSubmitting(false));
+    // db.collection(user.uid)
+    //   .add({
+    //     category,
+    //     name,
+    //     date: `Friday, ${day}, ${month} ${year}`,
+    //     timeRange,
+    //   })
+    //   .then((docRef) => {
+    //     console.log(docRef);
+    //     alert("Task added!");
+    //     navigation.replace("ViewTasks");
+    //   })
+    //   .catch((error) => {
+    //     alert(error);
+    //   })
+    //   .finally(() => setSubmitting(false));
   };
 
   return (

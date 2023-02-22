@@ -14,10 +14,11 @@ import { Feather } from "@expo/vector-icons";
 import Category from "../../components/Category";
 import Task from "../../components/Task";
 import { Ionicons } from "@expo/vector-icons";
-import { db } from "../../firebase.config";
 import { useSelector } from "react-redux";
+import { db } from "../../../firebase.config";
+import {useNavigation} from '@react-navigation/native'
 
-const ViewTasks = ({ navigation }) => {
+const ViewTasks = () => {
   const {
     container,
     profileBox,
@@ -35,38 +36,36 @@ const ViewTasks = ({ navigation }) => {
     categoryBtn,
     todayTaskHeader,
     categoriesBox,
-    addBtn,
-    addIcon,
-    addBtnContainer,
   } = styles;
-
-  console.log(navigation.getState);
 
   const categories = ["exercise", "date", "study", "work", "shopping"];
 
   const [tasks, setTasks] = useState([]);
   const [fetching, setFetching] = useState(false);
 
+  const navigation = useNavigation()
+
   const {user} = useSelector(state => state.auth)
 
   useEffect(() => {
     setFetching(true);
-    db.collection(user.uid)
-      .get()
-      .then((querySnapshot) => {
-        let documents = [];
+    // db.collection(user.uid)
+    //   .get()
+    //   .then((querySnapshot) => {
+    //     let documents = [];
 
-        querySnapshot.forEach((doc) => {
-          documents.push(doc.data());
-        });
-        setTasks(documents);
-      })
-      .finally(() => setFetching(false));
+    //     querySnapshot.forEach((doc) => {
+    //       documents.push(doc.data());
+    //     });
+    //     setTasks(documents);
+    //   })
+    //   .finally(() => setFetching(false));
   }, [navigation]);
+
+  console.log(user, 'viewTask')
 
   return (
     <View style={container}>
-      <Text>hhi</Text>
       <View style={profileBox}>
         <Image
           style={profileImg}
@@ -74,7 +73,7 @@ const ViewTasks = ({ navigation }) => {
         />
         <View style={profileNameBox}>
           <Text style={profileHeader}>Welcome back,</Text>
-          <Text style={profileName}>{user.displayName}</Text>
+          <Text style={profileName}>{user.user.displayName}</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.push("Profile")}>
           <Entypo name="menu" size={32} color="black" />
@@ -128,14 +127,6 @@ const ViewTasks = ({ navigation }) => {
         )}
       </>
 
-      <View style={addBtnContainer}>
-        <TouchableOpacity
-          style={addBtn}
-          onPress={() => navigation.push("AddTask")}
-        >
-          <Ionicons name="add-circle" style={addIcon} />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
@@ -149,10 +140,9 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight,
   },
   profileImg: {
-    marginLeft: -21,
-    marginTop: -17,
-    marginBottom: -26,
-    marginRight: -21,
+    height: 60,
+    width: 60,
+    borderRadius: 10
   },
   profileNameBox: {
     flex: 1,
@@ -208,25 +198,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 22,
     marginTop: 20,
-  },
-  addBtn: {
-    // width: Dimensions.get("window").width * 0.5,
-    // backgroundColor: "red",
-    // right: Dimensions.get("window").width * 0.5,
-    // transform: [{ translateX: Dimensions.get("window").width * 0.5 }],
-  },
-  addIcon: {
-    fontSize: 64,
-    color: "#1D89C5",
-  },
-  addBtnContainer: {
-    position: "absolute",
-    bottom: -10,
-    zIndex: 5,
-    width: "100%",
-    // backgroundColor: "red",
-    width: Dimensions.get("window").width,
-    justifyContent: "center",
-    flexDirection: "row",
   },
 });
