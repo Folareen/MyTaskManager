@@ -5,10 +5,13 @@ import HomeStack from './HomeStack';
 import PlanStack from './PlanStack';
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from '@react-navigation/native';
 
 const Tabs = createBottomTabNavigator();
 
 const Main = () => {
+
+    const navigation = useNavigation()
 
     const {
         addBtn,
@@ -42,12 +45,13 @@ const Main = () => {
                     }}
                 />
             </Tabs.Navigator>
-
+            
 
             <View style={addBtnContainer}>
                 <TouchableOpacity
                     style={addBtn}
-                    onPress={() => navigation.push("AddTask")}
+                    onPress={() =>{navigation.navigate('AddTask')
+                    }}
                 >
                     <Ionicons name="add-circle" style={addIcon} />
                 </TouchableOpacity>
