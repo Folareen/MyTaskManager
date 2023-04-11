@@ -41,6 +41,8 @@ const ViewTasks = () => {
     categoryBtn,
     todayTaskHeader,
     categoriesBox,
+    statusBtn, 
+    activeStatusBtn
   } = styles;
 
   const categories = ["exercise", "date", "study", "work", "shopping"];
@@ -48,6 +50,34 @@ const ViewTasks = () => {
   const today = new Date().toISOString().slice(0, 10);
 
   const [tasks, fetching] = useCollection(query(collection(db, user.user.uid), where('date', '==', today)));
+  const [displayedTasks, setDisplayedTasks] = useState([])
+  const [filterStatus, setFilterStatus] = useState('all')
+
+  useEffect(() => {
+    if (!tasks) return
+    setDisplayedTasks(tasks?.docs)
+    setFilterStatus('all')
+  }, [tasks])
+
+  useEffect(() => {
+    if(filterStatus == 'all') {
+      setDisplayedTasks(tasks?.docs)
+      return
+    }
+    if(filterStatus == 'pending') {
+      setDisplayedTasks(tasks?.docs.filter(task => task.data().status == 'pending'))  
+      return
+    }
+    if(filterStatus == 'completed') {
+      setDisplayedTasks(tasks?.docs.filter(task => task.data().status == 'completed'))  
+      return
+    }
+    if(filterStatus == 'overdue') {
+      setDisplayedTasks(tasks?.docs.filter(task => task.data().timeRange.endTime.toDate().getTime() < new Date().getTime() && task.data().status == 'pending'))  
+      return
+    }
+  }, [filterStatus])
+
 
   const navigation = useNavigation()
 
@@ -79,18 +109,31 @@ const ViewTasks = () => {
 
       <View style={categoryHeaderBox}>
         <Text style={categoryHeader}>Categories</Text>
-        <Text style={categoryBtn}>View all</Text>
       </View>
 
       <View style={categoriesBox}>
         {categories.map((category) => (
-          <TouchableOpacity>
+          <TouchableOpacity style={categoryBtn}>
             <Category name={category} isInTask={false} />
           </TouchableOpacity>
         ))}
       </View>
 
       <Text style={todayTaskHeader}>Today's task({tasks?.docs?.length})</Text>
+      <View style={{ flexDirection: 'row'}}>
+        {
+          ['all', 'pending', 'completed', 'overdue'].map(
+            (status) => (
+              <TouchableOpacity onPress={() => {
+                setFilterStatus(status)
+              }} style={filterStatus == status ? activeStatusBtn : statusBtn }>
+                <Text style={[{fontSize: 12, paddingHorizontal: 12, paddingVertical: 4, textTransform: 'capitalize'}, filterStatus == status ? {color: 'white'} : {color: 'rgba(17, 15, 15, 0.8)' } ]}>{status}</Text>
+              </TouchableOpacity>
+            ))
+        }
+      </View>
+
+
 
       <>
         {fetching ? (
@@ -100,12 +143,12 @@ const ViewTasks = () => {
             Loading tasks...
           </Text>
         ) : (
-          <ScrollView>
-            {tasks?.docs?.length === 0 ? (
-              <Text style={{ marginVertical: 10 }}>No task... add a task.</Text>
+          <ScrollView >
+            {displayedTasks?.length === 0 ? (
+              <Text style={{ marginVertical: 10 }}>No task found...</Text>
             ) : (
               <>
-                {tasks?.docs?.map((doc) => (
+                {displayedTasks?.map((doc) => (
                   <Task icon={doc.data().category} name={doc.data().name} duration={doc.data().timeRange} />
                 ))}
               </>
@@ -174,10 +217,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   categoryHeader: { fontWeight: "bold", fontSize: 22 },
-  categoryBtn: {},
+  categoryBtn: {marginHorizontal: 10},
   categoriesBox: {
     flexDirection: "row",
-    justifyContent: "space-between",
     marginVertical: 10,
   },
   todayTaskHeader: {
@@ -186,4 +228,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginTop: 20,
   },
+  statusBtn: {
+    color: 'rgba(17, 15, 15, 0.8)',
+    marginRight: 5
+  },
+  activeStatusBtn: {
+    backgroundColor: '#1D89C5',
+    marginRight: 5,
+    borderRadius: 5
+  }
 });
