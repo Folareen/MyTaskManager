@@ -82,5 +82,6 @@ const styles = StyleSheet.create({
   categoryName: {
     textTransform: "capitalize",
     color: "rgba(17, 15, 15, 0.8)",
+    textAlign: "center",
   },
 });
