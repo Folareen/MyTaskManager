@@ -65,7 +65,7 @@ const AddTask = ({ navigation }) => {
       .add({
         category,
         name,
-        date,
+        date: date.toISOString().slice(0, 10),
         timeRange: {startTime, endTime},
       })
       .then((docRef) => {
