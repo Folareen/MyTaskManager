@@ -45,7 +45,7 @@ const ViewTasks = () => {
     activeStatusBtn
   } = styles;
 
-  const categories = ["exercise", "date", "study", "work", "shopping"];
+  const categories = ["exercise", "date", "study", "work", "shopping", "other"];
 
   const today = new Date().toISOString().slice(0, 10);
 

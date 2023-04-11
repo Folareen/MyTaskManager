@@ -61,6 +61,16 @@ const Category = ({ name, isInTask }) => {
       </View>
     );
   }
+  if (name === "other") {
+    return (
+      <View style={categoryBox}>
+        <FontAwesome5 name="tasks" size={24} color="black"
+          style={[categoryIcon, isInTask ? {} : notInTask]}
+        />
+        {!isInTask && <Text style={categoryName}>{name}</Text>}
+      </View>
+    );
+  }
 };
 
 export default Category;

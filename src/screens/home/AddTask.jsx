@@ -6,6 +6,7 @@ import {
   TouchableWithoutFeedback,
   View,
   KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import React, { useState } from "react";
 import Category from "../../components/Category";
@@ -15,7 +16,7 @@ import { db } from "../../../firebase.config";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { formatTime } from "../../utils/formatTime";
 
-const categories = ["exercise", "date", "study", "work", "shopping"];
+const categories = ["exercise", "date", "study", "work", "shopping", 'other'];
 
 const AddTask = ({ navigation }) => {
   const {
@@ -91,24 +92,27 @@ const AddTask = ({ navigation }) => {
   return (
     <KeyboardAvoidingView behavior="height" style={container}>
       <Text style={categoryHeader}>choose task category</Text>
-      <View style={categoriesBox}>
-        {categories.map((each) => (
-          <TouchableOpacity
-            key={each}
-            onPress={() => setCategory(each)}
-            style={
-              category == each
-                ? {
-                  backgroundColor: "lightblue",
-                  padding: 5,
-                  borderRadius: 5,
-                }
-                : {}
-            }
-          >
-            <Category name={each} isInTask={false} />
-          </TouchableOpacity>
-        ))}
+
+      <View>
+        <ScrollView  horizontal={true} style={categoriesBox}>
+            {categories.map((each) => (
+              <TouchableOpacity
+                key={each}
+                onPress={() => setCategory(each)}
+                style={[
+                  category == each
+                    ? {
+                      backgroundColor: "lightblue",
+                      padding: 5,
+                      borderRadius: 5,
+                    }
+                    : {}
+                  , { marginRight: 10 }]}
+              >
+                <Category name={each} isInTask={false} />
+              </TouchableOpacity>
+            ))}
+        </ScrollView>
       </View>
 
       <View style={inputContainer}>
@@ -253,9 +257,7 @@ const styles = StyleSheet.create({
   },
   categoriesBox: {
     flexDirection: "row",
-    justifyContent: "space-between",
     marginVertical: 10,
-    alignItems: "center",
   },
   inputContainer: {
     marginTop: 25,
