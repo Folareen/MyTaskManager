@@ -57,6 +57,7 @@ const ViewTasks = () => {
   const [prevCard, setPrevCard] = useState(null)
 
   const [submitting, setSubmitting] = useState(false);
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     if (!tasks) return
@@ -91,6 +92,14 @@ const ViewTasks = () => {
       setDisplayedTasks(tasks?.docs.filter(task => task.data().category == filterCategory))
   }, [filterCategory])
 
+  useEffect(() => {
+    if (search == '') {
+      setDisplayedTasks(tasks?.docs)
+      return
+    }
+    setDisplayedTasks(tasks?.docs.filter(task => task.data().name.toLowerCase().includes(search.toLowerCase()))) 
+  }, [search])
+
 
 
   const navigation = useNavigation()
@@ -118,7 +127,7 @@ const ViewTasks = () => {
 
       <View style={searchBox}>
         <Feather name="search" size={24} color="black" style={searchIcon} />
-        <TextInput style={searchInput} placeholder="Find your task" />
+        <TextInput style={searchInput} value={search} onChangeText={(text) => setSearch(text)} placeholder="Find your task" />
       </View>
 
       <View style={categoryHeaderBox}>
