@@ -41,7 +41,7 @@ const ViewTasks = () => {
     categoryBtn,
     todayTaskHeader,
     categoriesBox,
-    statusBtn, 
+    statusBtn,
     activeStatusBtn
   } = styles;
 
@@ -54,6 +54,10 @@ const ViewTasks = () => {
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterCategory, setFilterCategory] = useState('')
 
+  const [prevCard, setPrevCard] = useState(null)
+
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     if (!tasks) return
     setDisplayedTasks(tasks?.docs)
@@ -61,20 +65,20 @@ const ViewTasks = () => {
   }, [tasks])
 
   useEffect(() => {
-    if(filterStatus == 'all') {
+    if (filterStatus == 'all') {
       setDisplayedTasks(tasks?.docs)
       return
     }
-    if(filterStatus == 'pending') {
-      setDisplayedTasks(tasks?.docs.filter(task => task.data().status == 'pending'))  
+    if (filterStatus == 'pending') {
+      setDisplayedTasks(tasks?.docs.filter(task => task.data().status == 'pending'))
       return
     }
-    if(filterStatus == 'completed') {
-      setDisplayedTasks(tasks?.docs.filter(task => task.data().status == 'completed'))  
+    if (filterStatus == 'completed') {
+      setDisplayedTasks(tasks?.docs.filter(task => task.data().status == 'completed'))
       return
     }
-    if(filterStatus == 'overdue') {
-      setDisplayedTasks(tasks?.docs.filter(task => task.data().timeRange.endTime.toDate().getTime() < new Date().getTime() && task.data().status == 'pending'))  
+    if (filterStatus == 'overdue') {
+      setDisplayedTasks(tasks?.docs.filter(task => task.data().timeRange.endTime.toDate().getTime() < new Date().getTime() && task.data().status == 'pending'))
       return
     }
   }, [filterStatus])
@@ -113,36 +117,36 @@ const ViewTasks = () => {
       </View>
 
       <View>
-        <ScrollView  horizontal={true} style={categoriesBox}>
-            {categories.map((each) => (
-              <TouchableOpacity
-                key={each}
-                style={[
-                  filterCategory == each
-                    ? {
-                      backgroundColor: "lightblue",
-                      padding: 5,
-                      borderRadius: 5,
-                    }
-                    : {}
-                  , { marginRight: 10 }]}
-              >
-                <Category name={each} isInTask={false} />
-              </TouchableOpacity>
-            ))}
+        <ScrollView horizontal={true} style={categoriesBox}>
+          {categories.map((each) => (
+            <TouchableOpacity
+              key={each}
+              style={[
+                filterCategory == each
+                  ? {
+                    backgroundColor: "lightblue",
+                    padding: 5,
+                    borderRadius: 5,
+                  }
+                  : {}
+                , { marginRight: 10 }]}
+            >
+              <Category name={each} isInTask={false} />
+            </TouchableOpacity>
+          ))}
         </ScrollView>
       </View>
 
 
       <Text style={todayTaskHeader}>Today's task({tasks?.docs?.length})</Text>
-      <View style={{ flexDirection: 'row'}}>
+      <View style={{ flexDirection: 'row' }}>
         {
           ['all', 'pending', 'completed', 'overdue'].map(
             (status) => (
               <TouchableOpacity onPress={() => {
                 setFilterStatus(status)
-              }} style={filterStatus == status ? activeStatusBtn : statusBtn }>
-                <Text style={[{fontSize: 12, paddingHorizontal: 12, paddingVertical: 4, textTransform: 'capitalize'}, filterStatus == status ? {color: 'white'} : {color: 'rgba(17, 15, 15, 0.8)' } ]}>{status}</Text>
+              }} style={filterStatus == status ? activeStatusBtn : statusBtn}>
+                <Text style={[{ fontSize: 12, paddingHorizontal: 12, paddingVertical: 4, textTransform: 'capitalize' }, filterStatus == status ? { color: 'white' } : { color: 'rgba(17, 15, 15, 0.8)' }]}>{status}</Text>
               </TouchableOpacity>
             ))
         }
@@ -164,13 +168,24 @@ const ViewTasks = () => {
             ) : (
               <>
                 {displayedTasks?.map((doc) => (
-                  <Task icon={doc.data().category} name={doc.data().name} duration={doc.data().timeRange} />
+                  <Task id={doc.id} icon={doc.data().category} name={doc.data().name} duration={doc.data().timeRange} prevCard={prevCard} setPrevCard={setPrevCard} setSubmitting={setSubmitting} />
                 ))}
               </>
             )}
           </ScrollView>
         )}
       </>
+
+      {
+        submitting && (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.4)', position: 'absolute', height: Dimensions.get('window').height, width: Dimensions.get('window').width, zIndex: 9999, bottom: 0 }}>
+            <Text style={{ color: 'blue', backgroundColor: 'white', padding: 5, borderRadius: 5 }}>
+              Please wait...
+            </Text>
+          </View>
+        )
+      }
+
 
     </View>
   );
@@ -232,7 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   categoryHeader: { fontWeight: "bold", fontSize: 22 },
-  categoryBtn: {marginHorizontal: 10},
+  categoryBtn: { marginHorizontal: 10 },
   categoriesBox: {
     flexDirection: "row",
     marginVertical: 10,
