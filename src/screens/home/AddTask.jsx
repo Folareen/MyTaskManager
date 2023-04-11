@@ -9,9 +9,10 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import Category from "../../components/Category";
-// import { db } from "../../firebase.config";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase.config";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const categories = ["exercise", "date", "study", "work", "shopping"];
 
@@ -31,35 +32,58 @@ const AddTask = ({ navigation }) => {
 
   const [category, setCategory] = useState("");
   const [name, setName] = useState("");
-  const [day, setDay] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
   const [timeRange, setTimeRange] = useState("");
 
-  const {user} = useSelector(state => state.auth)
+  const [date, setDate] = useState(new Date())
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const [startTime, setStartTime] = useState(new Date())
+  const [showStartTimePicker, setShowStartTimePicker] = useState(false);
+  const [endTime, setEndTime] = useState(new Date())
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+
+  const onStartTimeChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShowStartTimePicker(false);
+    setStartTime(currentDate);
+  };
+  const onEndTimeChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShowEndTimePicker(false);
+    setEndTime(currentDate);
+  };
+
+  const { user } = useSelector(state => state.auth)
 
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = () => {
-    if (!category || !name || !day || !month || !year || !timeRange)
+    if (!category || !name || !date || !startTime || !endTime)
       return alert("Error!... please fill all fields!");
     setSubmitting(true);
-    // db.collection(user.uid)
-    //   .add({
-    //     category,
-    //     name,
-    //     date: `Friday, ${day}, ${month} ${year}`,
-    //     timeRange,
-    //   })
-    //   .then((docRef) => {
-    //     console.log(docRef);
-    //     alert("Task added!");
-    //     navigation.replace("ViewTasks");
-    //   })
-    //   .catch((error) => {
-    //     alert(error);
-    //   })
-    //   .finally(() => setSubmitting(false));
+    db.collection(user.user.uid)
+      .add({
+        category,
+        name,
+        date,
+        timeRange: {startTime, endTime},
+      })
+      .then((docRef) => {
+        console.log(docRef);
+        alert("Task added!");
+        navigation.replace("ViewTasks");
+      })
+      .catch((error) => {
+        alert(error);
+      })
+      .finally(() => setSubmitting(false));
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    console.log(selectedDate, 'selected date')
+    const currentDate = selectedDate;
+    setShowDatePicker(false);
+    setDate(currentDate);
   };
 
   return (
@@ -73,10 +97,10 @@ const AddTask = ({ navigation }) => {
             style={
               category == each
                 ? {
-                    backgroundColor: "lightblue",
-                    padding: 5,
-                    borderRadius: 5,
-                  }
+                  backgroundColor: "lightblue",
+                  padding: 5,
+                  borderRadius: 5,
+                }
                 : {}
             }
           >
@@ -96,58 +120,84 @@ const AddTask = ({ navigation }) => {
 
       <View style={inputContainer}>
         <Text style={inputLabel}>Task's date</Text>
-        <View style={dateFieldBox}>
+        <TouchableOpacity
+          style={dateFieldBox}
+          onPress={() => setShowDatePicker(true)}
+        >
           <View style={{ flex: 0.3 }}>
             <Text style={{ fontWeight: "bold" }}>Day</Text>
-            <TextInput
-              placeholder={"e.g 10"}
+            <Text
               style={dateField}
-              value={day}
-              onChangeText={(value) => setDay(value)}
-            />
+            >
+              {date.getDate()}
+            </Text>
           </View>
           <View style={{ flex: 0.3 }}>
             <Text style={{ fontWeight: "bold" }}>Month</Text>
-            <TextInput
-              placeholder={"e.g August"}
+            <Text
               style={dateField}
-              value={month}
-              onChangeText={(value) => setMonth(value)}
-            />
+            >
+              {[
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+              ][date.getMonth() + 1]}
+            </Text>
           </View>
           <View style={{ flex: 0.3 }}>
             <Text style={{ fontWeight: "bold" }}>Year</Text>
-            <TextInput
+            <Text
               placeholder={"e.g 2015"}
               style={dateField}
-              value={year}
-              onChangeText={(value) => setYear(value)}
-            />
+            >
+              {date.getFullYear()}
+            </Text>
           </View>
-
-          {/* {[(title: "Day"), "Month", "Year"].map((input, index) => (
-            <View style={{ flex: 1 }}>
-              <Text style={{ fontWeight: "bold" }}>{input}</Text>
-              <TextInput placeholder={`${input}`} style={dateField} />
-            </View>
-          ))} */}
-        </View>
+        </TouchableOpacity>
       </View>
 
       <View style={inputContainer}>
         <Text style={inputLabel}>Task time range</Text>
-        <TextInput
-          style={inputField}
-          value={timeRange}
-          onChangeText={(value) => setTimeRange(value)}
-          placeholder="e.g 7am-8pm"
-        />
+        <View style={dateFieldBox}>
+          <View style={{ flex: 0.45 }}>
+            <Text style={{ fontWeight: "bold" }}>Start Time</Text>
+            <TouchableOpacity
+              onPress={() => setShowStartTimePicker(true)}
+              style={{ marginRight: 10 }}
+            >
+              <Text
+                style={inputField}
+              >
+                {startTime.toLocaleTimeString()}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ flex: 0.45 }}>
+            <Text style={{ fontWeight: "bold" }}>End Time</Text>
+            <TouchableOpacity
+              onPress={() => setShowEndTimePicker(true)}
+            >
+              <Text
+                style={inputField}
+              >
+                {endTime.toLocaleTimeString()}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+        </View>
       </View>
 
-      {/* <View style={inputContainer}>
-        <Text style={inputLabel}>Reminder</Text>
-        <CheckBox style={inputField} />
-      </View> */}
 
       <TouchableOpacity
         style={[button, submitting ? { backgroundColor: "grey" } : {}]}
@@ -158,6 +208,34 @@ const AddTask = ({ navigation }) => {
           {submitting ? "please wait..." : "add task"}
         </Text>
       </TouchableOpacity>
+
+      {showDatePicker && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode={"date"}
+          is24Hour={true}
+          onChange={onDateChange}
+        />
+      )}
+      {showStartTimePicker && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={startTime}
+          mode={"time"}
+          is24Hour={true}
+          onChange={onStartTimeChange}
+        />
+      )}
+      {showEndTimePicker && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={endTime}
+          mode={"time"}
+          is24Hour={true}
+          onChange={onEndTimeChange}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 };
@@ -187,7 +265,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   inputField: {
-    padding: 10,
+    padding: 15,
     borderColor: "rgba(195, 187, 187, 1)",
     borderWidth: 1,
     borderRadius: 10,
@@ -197,7 +275,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   dateField: {
-    padding: 10,
+    padding: 15,
     borderColor: "rgba(195, 187, 187, 1)",
     borderWidth: 1,
     borderRadius: 10,
