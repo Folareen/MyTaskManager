@@ -83,6 +83,15 @@ const ViewTasks = () => {
     }
   }, [filterStatus])
 
+  useEffect(() => {
+    if (filterCategory == '') {
+      setDisplayedTasks(tasks?.docs)
+      return
+    }
+      setDisplayedTasks(tasks?.docs.filter(task => task.data().category == filterCategory))
+  }, [filterCategory])
+
+
 
   const navigation = useNavigation()
 
@@ -130,6 +139,9 @@ const ViewTasks = () => {
                   }
                   : {}
                 , { marginRight: 10 }]}
+                onPress={() => {
+                  setFilterCategory(each)
+                }}
             >
               <Category name={each} isInTask={false} />
             </TouchableOpacity>
