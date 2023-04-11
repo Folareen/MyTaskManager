@@ -52,6 +52,7 @@ const ViewTasks = () => {
   const [tasks, fetching] = useCollection(query(collection(db, user.user.uid), where('date', '==', today)));
   const [displayedTasks, setDisplayedTasks] = useState([])
   const [filterStatus, setFilterStatus] = useState('all')
+  const [filterCategory, setFilterCategory] = useState('')
 
   useEffect(() => {
     if (!tasks) return
@@ -111,13 +112,27 @@ const ViewTasks = () => {
         <Text style={categoryHeader}>Categories</Text>
       </View>
 
-      <View style={categoriesBox}>
-        {categories.map((category) => (
-          <TouchableOpacity style={categoryBtn}>
-            <Category name={category} isInTask={false} />
-          </TouchableOpacity>
-        ))}
+      <View>
+        <ScrollView  horizontal={true} style={categoriesBox}>
+            {categories.map((each) => (
+              <TouchableOpacity
+                key={each}
+                style={[
+                  filterCategory == each
+                    ? {
+                      backgroundColor: "lightblue",
+                      padding: 5,
+                      borderRadius: 5,
+                    }
+                    : {}
+                  , { marginRight: 10 }]}
+              >
+                <Category name={each} isInTask={false} />
+              </TouchableOpacity>
+            ))}
+        </ScrollView>
       </View>
+
 
       <Text style={todayTaskHeader}>Today's task({tasks?.docs?.length})</Text>
       <View style={{ flexDirection: 'row'}}>
