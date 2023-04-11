@@ -67,6 +67,7 @@ const AddTask = ({ navigation }) => {
         name,
         date: date.toISOString().slice(0, 10),
         timeRange: {startTime, endTime},
+        status: 'pending'
       })
       .then((docRef) => {
         console.log(docRef);
