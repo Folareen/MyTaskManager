@@ -9,7 +9,7 @@ const Task = ({ name, icon, duration }) => {
       <Category isInTask={true} name={icon} />
       <View style={taskNameBox}>
         <Text style={taskName}>{name}</Text>
-        <Text style={taskDuration}>{duration}</Text>
+        <Text style={taskDuration}>{duration.startTime.toDate().toLocaleTimeString()} - {duration.endTime.toDate().toLocaleTimeString()}</Text>
       </View>
     </View>
   );
