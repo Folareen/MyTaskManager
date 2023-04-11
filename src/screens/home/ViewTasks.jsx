@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Entypo } from "@expo/vector-icons";
@@ -16,9 +17,13 @@ import Task from "../../components/Task";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase.config";
-import {useNavigation} from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
+import { collection, addDoc, serverTimestamp, orderBy, query, where } from 'firebase/firestore';
+import { useCollection } from 'react-firebase-hooks/firestore'
+
 
 const ViewTasks = () => {
+  const { user } = useSelector(state => state.auth);
   const {
     container,
     profileBox,
@@ -40,29 +45,11 @@ const ViewTasks = () => {
 
   const categories = ["exercise", "date", "study", "work", "shopping"];
 
-  const [tasks, setTasks] = useState([]);
-  const [fetching, setFetching] = useState(false);
+  const today = new Date().toISOString().slice(0, 10);
+
+  const [tasks, fetching] = useCollection(query(collection(db, user.user.uid), where('date', '==', today)));
 
   const navigation = useNavigation()
-
-  const {user} = useSelector(state => state.auth)
-
-  useEffect(() => {
-    setFetching(true);
-    // db.collection(user.uid)
-    //   .get()
-    //   .then((querySnapshot) => {
-    //     let documents = [];
-
-    //     querySnapshot.forEach((doc) => {
-    //       documents.push(doc.data());
-    //     });
-    //     setTasks(documents);
-    //   })
-    //   .finally(() => setFetching(false));
-  }, [navigation]);
-
-  console.log(user, 'viewTask')
 
   return (
     <View style={container}>
@@ -81,7 +68,7 @@ const ViewTasks = () => {
       </View>
 
       <Text style={taskAmount}>
-        you have <Text style={taskAmountHighlight}>{tasks.length} tasks</Text>{" "}
+        you have <Text style={taskAmountHighlight}>{tasks?.docs?.length} tasks</Text>{" "}
         this week
       </Text>
 
@@ -103,7 +90,7 @@ const ViewTasks = () => {
         ))}
       </View>
 
-      <Text style={todayTaskHeader}>Today's task({tasks.length})</Text>
+      <Text style={todayTaskHeader}>Today's task({tasks?.docs?.length})</Text>
 
       <>
         {fetching ? (
@@ -113,17 +100,17 @@ const ViewTasks = () => {
             Loading tasks...
           </Text>
         ) : (
-          <View>
-            {tasks.length === 0 ? (
+          <ScrollView>
+            {tasks?.docs?.length === 0 ? (
               <Text style={{ marginVertical: 10 }}>No task... add a task.</Text>
             ) : (
               <>
-                {tasks.map(({ category, name, timeRange }) => (
-                  <Task icon={category} name={name} duration={timeRange} />
+                {tasks?.docs?.map((doc) => (
+                  <Task icon={doc.data().category} name={doc.data().name} duration={doc.data().timeRange} />
                 ))}
               </>
             )}
-          </View>
+          </ScrollView>
         )}
       </>
 
