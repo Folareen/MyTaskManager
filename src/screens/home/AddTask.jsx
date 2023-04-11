@@ -66,7 +66,7 @@ const AddTask = ({ navigation }) => {
         category,
         name,
         date: date.toISOString().slice(0, 10),
-        timeRange: {startTime, endTime},
+        timeRange: { startTime, endTime },
         status: 'pending'
       })
       .then((docRef) => {
@@ -178,7 +178,7 @@ const AddTask = ({ navigation }) => {
               <Text
                 style={inputField}
               >
-                {startTime.toLocaleTimeString()}
+                {startTime.toLocaleTimeString().replace(startTime.toLocaleTimeString().slice(0, 2), Number(startTime.getHours()) - 12)}{" "}{startTime.getHours() - 12 >= 0 ? "PM" : "AM"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -191,7 +191,7 @@ const AddTask = ({ navigation }) => {
               <Text
                 style={inputField}
               >
-                {endTime.toLocaleTimeString()}
+                {endTime.toLocaleTimeString().replace(endTime.toLocaleTimeString().slice(0, 2), Number(endTime.getHours()) - 12)}{" "}{endTime.getHours() - 12 >= 0 ? "PM" : "AM"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -215,7 +215,7 @@ const AddTask = ({ navigation }) => {
           testID="dateTimePicker"
           value={date}
           mode={"date"}
-          is24Hour={true}
+          is24Hour={false}
           onChange={onDateChange}
         />
       )}
@@ -224,7 +224,7 @@ const AddTask = ({ navigation }) => {
           testID="dateTimePicker"
           value={startTime}
           mode={"time"}
-          is24Hour={true}
+          is24Hour={false}
           onChange={onStartTimeChange}
         />
       )}
@@ -233,7 +233,7 @@ const AddTask = ({ navigation }) => {
           testID="dateTimePicker"
           value={endTime}
           mode={"time"}
-          is24Hour={true}
+          is24Hour={false}
           onChange={onEndTimeChange}
         />
       )}
