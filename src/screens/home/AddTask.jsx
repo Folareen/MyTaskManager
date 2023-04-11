@@ -13,6 +13,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useSelector } from "react-redux";
 import { db } from "../../../firebase.config";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { formatTime } from "../../utils/formatTime";
 
 const categories = ["exercise", "date", "study", "work", "shopping"];
 
@@ -178,7 +179,7 @@ const AddTask = ({ navigation }) => {
               <Text
                 style={inputField}
               >
-                {startTime.toLocaleTimeString().replace(startTime.toLocaleTimeString().slice(0, 2), Number(startTime.getHours()) - 12)}{" "}{startTime.getHours() - 12 >= 0 ? "PM" : "AM"}
+                {formatTime(startTime)}
               </Text>
             </TouchableOpacity>
           </View>
@@ -191,7 +192,7 @@ const AddTask = ({ navigation }) => {
               <Text
                 style={inputField}
               >
-                {endTime.toLocaleTimeString().replace(endTime.toLocaleTimeString().slice(0, 2), Number(endTime.getHours()) - 12)}{" "}{endTime.getHours() - 12 >= 0 ? "PM" : "AM"}
+                {formatTime(endTime)}
               </Text>
             </TouchableOpacity>
           </View>
