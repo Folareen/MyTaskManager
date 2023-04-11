@@ -23,6 +23,20 @@ const Main = () => {
         <>
 
             <Tabs.Navigator
+                tabBarOptions={{
+                    style: {
+                        height: 60,
+                        backgroundColor: "#fff",
+                        borderTopWidth: 0,
+                        elevation: 0,
+                        marginTop: 5,
+                    },
+                    labelStyle: {
+                        fontSize: 14,
+                    },
+                    activeTintColor: "#1D89C5",
+                    inactiveTintColor: "#000",
+                }}
             >
                 <Tabs.Screen
                     name="HomeStack"
